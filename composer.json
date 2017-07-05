@@ -1,0 +1,20 @@
+{
+    "name": "unisharp/laravel-cassandra",
+    "author": [
+        {
+            "name": "UniSharp Ltd.",
+            "email": "unisharp-service@unisharp.com",
+            "homepage": "http://unisharp.com"
+        }
+    ],
+    "require": {
+        "ext-cassandra": ">=1.2.0",
+        "illuminate/database": ">=5.4",
+        "illuminate/support": ">=5.4"
+    },
+    "autoload": {
+        "psr-4" : {
+            "Unisharp\\Cassandra\\" : "src/"
+        }
+    }
+}
