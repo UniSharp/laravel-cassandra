@@ -1,19 +1,9 @@
 <?php
 namespace Unisharp\Cassandra;
 
-use Illuminate\Database\Concerns\ManagesTransactions;
 use Illuminate\Database\ConnectionInterface;
-use Closure;
-use Illuminate\Database\Events\QueryExecuted;
-use Illuminate\Database\Events\TransactionBeginning;
-use Illuminate\Database\Events\TransactionCommitted;
-use Illuminate\Database\Events\TransactionRolledBack;
-use Illuminate\Database\Query\Expression;
 use Illuminate\Database\Query\Grammars\Grammar;
 use Illuminate\Database\Query\Processors\Processor;
-use Illuminate\Database\QueryException;
-use Illuminate\Support\Arr;
-use LogicException;
 use Cassandra\ExecutionOptions;
 
 
@@ -155,6 +145,12 @@ class Connection extends \Illuminate\Database\Connection implements ConnectionIn
         });
     }
 
+    protected function reconnectIfMissingConnection()
+    {
+        if (is_null($this->getSession())) {
+            $this->reconnect();
+        }
+    }
 
     public function getExecuteOptions(array $bindings)
     {
