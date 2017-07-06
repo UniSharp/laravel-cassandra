@@ -6,6 +6,7 @@ use Illuminate\Database\Query\Builder as QueryBuilder;
 
 class Builder extends QueryBuilder
 {
+    public $allows = [];
     public function delete($id = null)
     {
         if (!is_null($id) && !is_null($this->from)) {
@@ -16,5 +17,11 @@ class Builder extends QueryBuilder
             $this->grammar->compileDelete($this),
             $this->getBindings()
         );
+    }
+
+    public function allowFiltering()
+    {
+        $this->allows[] = 'filtering';
+        return $this;
     }
 }
