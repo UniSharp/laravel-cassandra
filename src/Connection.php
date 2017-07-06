@@ -4,7 +4,6 @@ namespace Unisharp\Cassandra;
 use Illuminate\Database\ConnectionInterface;
 use Illuminate\Database\Query\Grammars\Grammar;
 use Illuminate\Database\Query\Processors\Processor;
-use Cassandra\ExecutionOptions;
 
 
 class Connection extends \Illuminate\Database\Connection implements ConnectionInterface
