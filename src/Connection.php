@@ -109,11 +109,6 @@ class Connection extends \Illuminate\Database\Connection implements ConnectionIn
         );
     }
 
-    protected function getDefaultSchemaGrammar()
-    {
-    }
-
-
     public function select($query, $bindings = [], $useReadPdo = true)
     {
         return $this->run($query, $bindings, function ($query, $bindings) use ($useReadPdo) {
@@ -131,9 +126,42 @@ class Connection extends \Illuminate\Database\Connection implements ConnectionIn
         });
     }
 
+    public function statement($query, $bindings = [])
+    {
+        return $this->run($query, $bindings, function ($query, $bindings) {
+            if ($this->pretending()) {
+                return true;
+            }
+
+            $statement = $this->getSession()->prepare($query);
+
+            return $this->getSession()->execute($statement, $this->getExecuteOptions($bindings));
+        });
+    }
+
+    public function affectingStatement($query, $bindings = [])
+    {
+        return $this->run($query, $bindings, function ($query, $bindings) {
+            if ($this->pretending()) {
+                return 0;
+            }
+
+
+            $statement = $this->getSession()->prepare($query);
+
+            $this->getSession()->execute($statement, $this->getExecuteOptions($bindings));
+
+            return 1;
+        });
+    }
+
 
     public function getExecuteOptions(array $bindings)
     {
         return ['arguments' => $this->prepareBindings($bindings)];
+    }
+
+    protected function getDefaultSchemaGrammar()
+    {
     }
 }
