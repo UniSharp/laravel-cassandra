@@ -1,7 +1,6 @@
 <?php
 return [
-    'connection' =>  [
-        'pgsql' => [
+        'cassandra' => [
             'driver' => 'cassandra',
             'host' => env('DB_HOST', '127.0.0.1'),
             'port' => env('DB_PORT', '9042'),
@@ -9,5 +8,4 @@ return [
             'username' => env('DB_USERNAME', 'cassandra'),
             'password' => env('DB_PASSWORD', 'cassandra'),
         ]
-    ]
 ];

@@ -10,7 +10,7 @@ class CassandraServiceProvider extends ServiceProvider
 {
     public function register()
     {
-        $this->mergeConfigFrom(__DIR__ . '../../config/database.php', 'database');
+        $this->mergeConfigFrom(__DIR__ . '/../../config/database.php', 'database.connections');
         $this->app->resolving('db', function (DatabaseManager $databaseManager) {
             $databaseManager->extend('cassandra', function ($config, $name) {
                 return new Connection(
