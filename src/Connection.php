@@ -4,6 +4,7 @@ namespace Unisharp\Cassandra;
 use Illuminate\Database\ConnectionInterface;
 use Illuminate\Database\Query\Grammars\Grammar;
 use Illuminate\Database\Query\Processors\Processor;
+use Unisharp\Cassandra\Schema\Grammars\CassandraBuilder;
 
 
 class Connection extends \Illuminate\Database\Connection implements ConnectionInterface
@@ -28,7 +29,7 @@ class Connection extends \Illuminate\Database\Connection implements ConnectionIn
         $this->session = $cluster->connect($keyspace);
 
         $this->useDefaultQueryGrammar();
-
+        $this->useDefaultSchemaGrammar();
         $this->useDefaultPostProcessor();
     }
 
@@ -110,7 +111,6 @@ class Connection extends \Illuminate\Database\Connection implements ConnectionIn
             // row from the database table, and will either be an array or objects.
             $statement = $this->getSession()->prepare($query);
 
-
             return $this->getSession()->execute($statement, $this->getExecuteOptions($bindings));
         });
     }
@@ -144,11 +144,13 @@ class Connection extends \Illuminate\Database\Connection implements ConnectionIn
         });
     }
 
-    protected function reconnectIfMissingConnection()
+    public function getSchemaBuilder()
     {
-        if (is_null($this->getSession())) {
-            $this->reconnect();
+        if (is_null($this->schemaGrammar)) {
+            $this->useDefaultSchemaGrammar();
         }
+
+        return new CassandraBuilder($this);
     }
 
     public function getExecuteOptions(array $bindings)
@@ -156,7 +158,26 @@ class Connection extends \Illuminate\Database\Connection implements ConnectionIn
         return ['arguments' => $this->prepareBindings($bindings)];
     }
 
+    public function getKeyspaceName()
+    {
+        return $this->keyspace;
+    }
+
+    public function getDatabaseName()
+    {
+        return $this->getKeyspaceName();
+    }
+
+
+    protected function reconnectIfMissingConnection()
+    {
+        if (is_null($this->getSession())) {
+            $this->reconnect();
+        }
+    }
+
     protected function getDefaultSchemaGrammar()
     {
+        return new Schema\Grammars\Grammar();
     }
 }

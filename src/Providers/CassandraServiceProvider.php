@@ -5,6 +5,8 @@ use Illuminate\Database\DatabaseManager;
 use Illuminate\Support\ServiceProvider;
 use Cassandra;
 use Unisharp\Cassandra\Connection;
+use Unisharp\Cassandra\Migrations\DatabaseMigrationRepository;
+use Unisharp\Cassandra\Schema\Grammars\Blueprint;
 
 class CassandraServiceProvider extends ServiceProvider
 {
@@ -13,7 +15,7 @@ class CassandraServiceProvider extends ServiceProvider
         $this->mergeConfigFrom(__DIR__ . '/../../config/database.php', 'database.connections');
         $this->app->resolving('db', function (DatabaseManager $databaseManager) {
             $databaseManager->extend('cassandra', function ($config, $name) {
-                return new Connection(
+                return  new Connection(
                     $this->getCluster($config),
                     $this->getDatabase($config),
                     $this->getPrefix($config),
@@ -21,11 +23,22 @@ class CassandraServiceProvider extends ServiceProvider
                 );
             });
         });
+
+        $this->registerRepository();
     }
 
     public function boot()
     {
+        $this->app->make('migration.repository');
+        $this->app->singleton('migration.repository', function ($app) {
+            $table = $app['config']['database.migrations'];
 
+            return new DatabaseMigrationRepository($app['db'], $table);
+        });
+    }
+
+    protected function registerRepository()
+    {
     }
 
     public function getDatabase(array $config)
